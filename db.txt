@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS cec_Entries;
+CREATE TABLE cec_Entries(
+  E_ID VARCHAR(100) NOT NULL,
+  E_Start DATETIME NOT NULL,
+  E_End DATETIME NOT NULL,
+  E_Description VARCHAR(100) NULL,
+  E_Summary VARCHAR(100) NULL,
+  E_Location VARCHAR(100) NULL,
+  E_Recurring VARCHAR(50) NULL,
+  E_Viewed CHAR(1) NOT NULL DEFAULT 'N',
+  E_ScriptNote VARCHAR(50) NULL,
+  PRIMARY KEY(E_ID)
+);
+
+INSERT INTO Variables(Var_System, Var_Name, Var_Value) VALUES('cec', 'import-day', '1');
+INSERT INTO Variables(Var_System, Var_Name, Var_Value) VALUES('cec', 'calendar-url', 'empty');
