@@ -1,5 +1,5 @@
 # Download calendar and import weekly (based on day selected in system)
-5 4 * * * pi php var/www/html/cec/importentries.php
+#5 4 * * * pi php var/www/html/cec/importentries.php
 
 # Cleanup Once a Week
-30 1 * * 2 pi bash /home/pi/scripts/cleanup.sh &
+#30 1 * * 2 pi bash /home/pi/scripts/cleanup.sh &
