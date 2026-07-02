@@ -14,10 +14,11 @@ install_log="/home/pi/log/cec/install.log"
 echo "Initiating Install" > $install_log
 
 mkdir -p /home/pi/scripts/cec
+cp /home/pi/cec/scripts/ghupdate.sh /home/pi/scripts/cec/ghupdate.sh
 sudo apt-get update
 sudo apt-get upgrade -y
 
-sudo mysql --user="$dbuser" --password="$dbpass" --database="$dbname" < /home/pi/csdb/db.txt
+sudo mysql --user="$dbuser" --password="$dbpass" --database="$dbname" < /home/pi/cec/db.txt
 
 echo "never" > /home/pi/cec_lastupdatecommit
 sudo cp -f /home/pi/cec/cec.cron /etc/cron.d/cec
