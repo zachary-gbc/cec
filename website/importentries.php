@@ -43,7 +43,7 @@ if(date("w") == $day)
         {
             if(strpos($line, "UID") !== false)
             {
-                $longid=substr($line,7); $id=substr($longid,0,strpos($longid,"-"));
+                $longid=substr($line,7); $id=substr($longid,0,strpos($longid,"-")); $ids[$id]=$id;
                 if(array_key_exists($id,$newids)) { $recurringids[$id]=$id; }
             }
             if(strpos($line, "DTSTART") !== false)
@@ -131,18 +131,18 @@ if(date("w") == $day)
                 $description=""; $summary=""; $location=""; $processitem=false; 
             }
         }
-    }
 
-    if(count($recurringids) > 1)
-    {
-        $recurringitems=implode("', '",$recurringids);
-        $update="UPDATE cec_Entries SET E_Recurring='Y' WHERE E_ID IN ('$recurringitems')";
-        if(!mysqli_query($db,$update)) { echo("Unable to Run Query: $update"); exit; }
-    }
+        if(count($recurringids) > 1)
+        {
+            $recurringitems=implode("', '",$recurringids);
+            $update="UPDATE cec_Entries SET E_Recurring='Y' WHERE E_ID IN ('$recurringitems')";
+            if(!mysqli_query($db,$update)) { echo("Unable to Run Query: $update"); exit; }
+        }
 
-    $notinlistitems=implode("', '",$ids); $note="Item Removed From Calendar";
-    $notinlist="UPDATE cec_Entries SET E_Viewed='N', E_ScriptNote='$note' WHERE E_ID NOT IN ('$notinlistitems')";
-    if(!mysqli_query($db,$notinlist)) { echo("Unable to Run Query: $notinlist"); exit; }
+        $notinlistitems=implode("', '",$ids); $note="Item Removed From Calendar";
+        $notinlist="UPDATE cec_Entries SET E_Viewed='N', E_ScriptNote='$note' WHERE E_ID NOT IN ('$notinlistitems')";
+        if(!mysqli_query($db,$notinlist)) { echo("Unable to Run Query: $notinlist"); exit; }
+    }
 
     if(file_exists("/var/www/html/cec/uploads/calendar")) { unlink("/var/www/html/cec/uploads/calendar"); }
 }

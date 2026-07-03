@@ -1,5 +1,5 @@
 <?php include('other/pretitle.php'); ?>
-<title>New Entries</title>
+<title>View Entries</title>
 <?php include('other/posttitle.php'); ?>
 
 <?php
@@ -25,9 +25,9 @@ if(!$rs=mysqli_query($db,$unviewed)) { echo("Unable to Run Query: $unviewed"); e
 while($row = mysqli_fetch_array($rs))
 {
     $id=$row['E_ID'];
-    if($row['E_Recurring'] == "Y" && $row['E_ScriptNote'] == "Y") { $recurringandnote[$id]=$id; }
+    if($row['E_Recurring'] == "Y" && trim($row['E_ScriptNote']) != "") { $recurringandnote[$id]=$id; }
     elseif($row['E_Recurring'] == "Y") { $recurring[$id]=$id; }
-    elseif($row['E_ScriptNote'] == "Y") { $notes[$id]=$id; }
+    elseif(trim($row['E_ScriptNote']) != "") { $notes[$id]=$id; }
     else { $new[$id]=$id; }
     $starts[$id]=$row['E_Start'];
     $ends[$id]=$row['E_End'];
