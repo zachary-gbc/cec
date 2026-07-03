@@ -5,5 +5,5 @@
     <div class="headermenu">
         <a class="headerlinks" href="/cec">Home</a>
         | <a class="headerlinks" href="/cec/checkentries.php">Check Entries</a>
-        | <a class="headerlinks" href="/cec/other/variables.php">Set Import Day</a>
+        | <a class="headerlinks" href="/cec/other/variables.php">Set Import Day &amp; Calendar</a>
     </div>

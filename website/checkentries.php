@@ -31,9 +31,9 @@ while($row = mysqli_fetch_array($rs))
     else { $new[$id]=$id; }
     $starts[$id]=$row['E_Start'];
     $ends[$id]=$row['E_End'];
-    $descriptions[$id]=$row['E_Description'];
-    $summaries[$id]=$row['E_Summary'];
-    $locations[$id]=$row['E_Location'];
+    if(trim($row['E_Description']) != "") { $descriptions[$id]=$row['E_Description']; } else { $descriptions[$id]=""; }
+    if(trim($row['E_Summary']) != "") { $summaries[$id]=$row['E_Summary']; } else { $summaries[$id]=""; }
+    if(trim($row['E_Location']) != "") { $locations[$id]=("(".$row['E_Location'].")"); } else { $locations[$id]=""; }
     $scriptnotes[$id]=$row['E_ScriptNote'];
 }
 
@@ -43,9 +43,10 @@ if(count($new) > 0)
     foreach($new as $id)
     {
         echo("<input type='checkbox' name='$id-checkbox' checked='checked' /> ");
-        echo("<strong>$summaries[$id]<strong> at $locations[$id]<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
+        echo("<strong>$summaries[$id]</strong> at " . substr($starts[$id],0,-3) . " $locations[$id]");
+        echo("<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
     }
-    echo("input type='submit' name='submit' value='Mark New Items As Viewed' /></form><br><br>");
+    echo("<input type='submit' name='submit' value='Mark New Items As Viewed' /></form><br><br>");
 }
 
 if(count($recurring) > 0)
@@ -54,9 +55,10 @@ if(count($recurring) > 0)
     foreach($recurring as $id)
     {
         echo("<input type='checkbox' name='$id-checkbox' checked='checked' /> ");
-        echo("<strong>$summaries[$id]<strong> at $locations[$id]<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
+        echo("<strong>$summaries[$id]</strong> at " . substr($starts[$id],0,-3) . " $locations[$id]");
+        echo("<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
     }
-    echo("input type='submit' name='submit' value='Mark New Recurring Items As Viewed' /></form><br><br>");
+    echo("<input type='submit' name='submit' value='Mark New Recurring Items As Viewed' /></form><br><br>");
 }
 
 if(count($notes) > 0)
@@ -65,10 +67,10 @@ if(count($notes) > 0)
     foreach($notes as $id)
     {
         echo("<input type='checkbox' name='$id-checkbox' checked='checked' /> ");
-        echo("<a style='color:red'>[ $scriptnotes[$id] ]<a> - <strong>$summaries[$id]<strong> at $locations[$id]");
-        echo("<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
+        echo("<a style='color:red'>[ $scriptnotes[$id] ]<a> - <strong>$summaries[$id]<strong> at ");
+        echo(substr($starts[$id],0,-3) . " $locations[$id]<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
     }
-    echo("input type='submit' name='submit' value='Mark Noted Items As Viewed' /></form><br><br>");
+    echo("<input type='submit' name='submit' value='Mark Noted Items As Viewed' /></form><br><br>");
 }
 
 if(count($recurringandnote) > 0)
@@ -77,10 +79,15 @@ if(count($recurringandnote) > 0)
     foreach($recurringandnote as $id)
     {
         echo("<input type='checkbox' name='$id-checkbox' checked='checked' /> ");
-        echo("<a style='color:red'>[ $scriptnotes[$id] ]<a> - <strong>$summaries[$id]<strong> at $locations[$id]");
-        echo("<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
+        echo("<a style='color:red'>[ $scriptnotes[$id] ]<a> - <strong>$summaries[$id]<strong> at ");
+        echo(substr($starts[$id],0,-3) . " $locations[$id]<br> &nbsp; &nbsp; Description: $descriptions[$id]<br><br>\n");
     }
-    echo("input type='submit' name='submit' value='Mark Recurring Noted Items As Viewed' /></form><br><br>");
+    echo("<input type='submit' name='submit' value='Mark Recurring Noted Items As Viewed' /></form><br><br>");
+}
+
+if(count($new) == 0 && count($recurring) == 0 && count($notes) == 0 && count($recurringandnote) == 0)
+{
+    echo("<h2> No New or Changed Items!</h2>");
 }
 ?>
 

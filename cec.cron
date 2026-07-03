@@ -1,3 +1,7 @@
+# GitHub Update Once A Day
+@reboot pi bash /home/pi/scripts/cec/ghupdate.sh &
+0 1 * * * pi bash /home/pi/scripts/cec/ghupdate.sh &
+
 # Download calendar and import weekly (based on day selected in system)
 #5 4 * * * pi php var/www/html/cec/importentries.php
 

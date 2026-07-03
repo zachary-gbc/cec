@@ -8,17 +8,17 @@ while($row = mysqli_fetch_array($rs)) { $day=$row['Var_Value']; }
 
 if(date("w") == $day)
 {
-    $calendarurl="SELECT Var_Value FROM Variables WHERE (Var_System='cec') AND (Var_Name='calendar-url')"; $url="";
+    $calendarurl="SELECT Var_Value FROM Variables WHERE (Var_System='cec') AND (Var_Name='calendar-url')"; $url=""; $ids=array();
     if(!$rs=mysqli_query($db,$calendarurl)) { echo("Unable to Run Query: $calendarurl"); exit; }
     while($row = mysqli_fetch_array($rs)) { $url=$row['Var_Value']; }
 
     if($url != "")
     {
         $starts=array(); $ends=array(); $descriptions=array(); $summarys=array(); $locations=array();
-        $recurrings=array(); $newids=array(); $recurringids=array();
-        $processitem=false; $recurringitems=""; $notinlistitems=""; $now=date("Y-m-d H:i:s");
+        $recurrings=array(); $newids=array(); $recurringids=array(); $i=0; $u=0;
+        $processitem=false;  $recurringitems=""; $notinlistitems=""; $now=date("Y-m-d H:i:s");
 
-        $delete="DELETE FROM cec_Entries WHERE (E_Start > '$now')";
+        $delete="DELETE FROM cec_Entries WHERE (E_Start < '$now')";
         if(!mysqli_query($db,$delete)) { echo("Unable to Run Query: $delete"); exit; }
 
         $calendarentries="SELECT * FROM cec_Entries";
@@ -34,29 +34,30 @@ if(date("w") == $day)
             $recurrings[$id]=$row['E_Recurring'];
         }
 
-        $calendar=file_get_contents($url);
-        $lines=file($calendar, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $id=""; $start=""; $end=""; $description=""l; $summary=""; $location="";
+        if(file_exists("/var/www/html/cec/uploads/calendar")) { unlink("/var/www/html/cec/uploads/calendar"); }
+        if(!copy($url,"/var/www/html/cec/uploads/calendar")) { echo"unable to copy file"; exit; }
+        $file=fopen("/var/www/html/cec/uploads/calendar", "r");
+        $id=""; $start=""; $end=""; $description=""; $summary=""; $location="";
 
-        foreach($lines as $line)
+        while(($line=fgets($file)) !== false)
         {
             if(strpos($line, "UID") !== false)
             {
-                $longid=substr($line,7); $id=substr($longid,0,strpos($longid,"-")); $newids[$id]=$id;
-                if(array_key_exists(($id,$newids))) { $recurringids[$id]=$id; }
+                $longid=substr($line,7); $id=substr($longid,0,strpos($longid,"-"));
+                if(array_key_exists($id,$newids)) { $recurringids[$id]=$id; }
             }
             if(strpos($line, "DTSTART") !== false)
             {
                 if(strpos($line,"DATE-TIME:") !== false)
                 {
-                    $long=substr($line,strpos($line,"DATE-TIME:"));
-                    $start=(substr($long,0,4) . "-" . substr($long,4,2) . "-" substr($long,6,2) . " ");
+                    $long=substr($line,strpos($line,"DATE-TIME:")+10);
+                    $start=(substr($long,0,4) . "-" . substr($long,4,2) . "-" . substr($long,6,2) . " ");
                     $start.=(substr($long,9,2) . ":" . substr($long,11,2) . ":00");
                 }
                 elseif(strpos($line,"DATE:") !== false)
                 {
-                    $long=substr($line,strpos($line,"DATE:"));
-                    $start=(substr($long,0,4) . "-" . substr($long,4,2) . "-" substr($long,6,2) . " 00:00:00");
+                    $long=substr($line,strpos($line,"DATE:")+5);
+                    $start=(substr($long,0,4) . "-" . substr($long,4,2) . "-" . substr($long,6,2) . " 00:00:00");
                 }
                 if(strtotime($start) > time()) { $processitem=true; }
             }
@@ -64,20 +65,35 @@ if(date("w") == $day)
             {
                 if(strpos($line,"DATE-TIME:") !== false)
                 {
-                    $long=substr($line,strpos($line,"DATE-TIME:"));
-                    $end=(substr($long,0,4) . "-" . substr($long,4,2) . "-" substr($long,6,2) . " ");
+                    $long=substr($line,strpos($line,"DATE-TIME:")+10);
+                    $end=(substr($long,0,4) . "-" . substr($long,4,2) . "-" . substr($long,6,2) . " ");
                     $end.=(substr($long,9,2) . ":" . substr($long,11,2) . ":00");
                 }
                 elseif(strpos($line,"DATE:") !== false)
                 {
-                    $long=substr($line,strpos($line,"DATE:"));
-                    $end=(substr($long,0,4) . "-" . substr($long,4,2) . "-" substr($long,6,2) . " 00:00:00");
+                    $long=substr($line,strpos($line,"DATE:")+5);
+                    $end=(substr($long,0,4) . "-" . substr($long,4,2) . "-" . substr($long,6,2) . " 00:00:00");
                 }
             }
-            if(strpos($line, "DESCRIPTION") !== false) { $description=substr(trim($line),12); }
-            if(strpos($line, "SUMMARY") !== false) { $summary=substr(trim($line),8); }
-            if(strpos($line, "LOCATION") !== false) { $location=substr(trim($line),9); }
-            
+            if(strpos($line, "DESCRIPTION") !== false)
+            {
+                $description=str_replace("'","''",substr(trim($line),12));
+                $description=str_replace("\\n","",$description);
+                $description=str_replace("\\","",$description);
+            }
+            if(strpos($line, "SUMMARY") !== false)
+            {
+                $summary=str_replace("'","''",substr(trim($line),8));
+                $summary=str_replace("\\n","",$summary);
+                $summary=str_replace("\\","",$summary);
+            }
+            if(strpos($line, "LOCATION") !== false)
+            {
+                $location=str_replace("'","''",substr(trim($line),9));
+                $location=str_replace("\\n","",$location);
+                $location=str_replace("\\","",$location);
+            }
+
             if(strpos($line, "END:VEVENT") !== false)
             {
                 $updatedb=false; $note="";
@@ -85,26 +101,34 @@ if(date("w") == $day)
                 {
                     if(array_key_exists($id,$starts))
                     {
-                        if($starts[$id] != $start) { $updatedb=true; $note.=", Start Time Change"; }
-                        if($ends[$id] != $end) { $updatedb=true; $note.=", End Time Change"; }
-                        if($descriptions[$id] != $description) { $updatedb=true; $note.=", Description Change"; }
-                        if($summarys[$id] != $summary) { $updatedb=true; $note.=", Summary Change"; }
-                        if($locations[$id] != $location) { $updatedb=true; $note.=", Location Change"; }
-                        
+                        if($recurrings[$id] == "N")
+                        {
+                            if(trim($starts[$id]) != trim($start)) { $updatedb=true; $note.=", Start Time Change"; }
+                            if(trim($ends[$id]) != trim($end)) { $updatedb=true; $note.=", End Time Change"; }
+                        }
+                        if(trim(str_replace("'","''",$descriptions[$id])) != trim($description))
+                        { $updatedb=true; $note.=", Description Change"; }
+                        if(trim(str_replace("'","''",$summarys[$id])) != trim($summary))
+                        { $updatedb=true; $note.=", Summary Change"; }
+                        if(trim(str_replace("'","''",$locations[$id])) != trim($location))
+                        { $updatedb=true; $note.=", Location Change"; }
+
                         if($updatedb == true)
                         {
                             $note=substr($note,2);
-                            $update="UPDATE cec_Entries SET E_Start='$start', E_End='$end', E_Description='$description', E_Summary='$summary', E_Location='$location', E_Viewed='N', E_ScriptNote='$note' WHERE (E_ID='$id')";
+                            $update="UPDATE cec_Entries SET E_Start='$start', E_End='$end', E_Description='$description', E_Summary='$summary', E_Location='$location', E_Viewed='N', E_ScriptNote='$note' WHERE (E_ID='$id')"; $u++;
                             if(!mysqli_query($db,$update)) { echo("Unable to Run Query: $update"); exit; }
                         }
                     }
-                    else
+                    elseif(!array_key_exists($id,$newids))
                     {
-                        $insert="INSERT INTO cec_Entries(E_Start, E_End, E_Description, E_Summary, E_Location VALUES('$start', '$end', '$description', '$summary', '$location')";
+                        $newids[$id]=$id;
+                        $insert="INSERT INTO cec_Entries(E_ID, E_Start, E_End, E_Description, E_Summary, E_Location) VALUES('$id', '$start', '$end', '$description', '$summary', '$location')"; $i++;
                         if(!mysqli_query($db,$insert)) { echo("Unable to Run Query: $insert"); exit; }
                     }
                 }
-                $id=""; $startdate=""; $starttime=""; $enddate=""; $endtime=""; $description=""l; $summary=""; $location="";
+                $id=""; $startdate=""; $starttime=""; $enddate=""; $endtime="";
+                $description=""; $summary=""; $location=""; $processitem=false; 
             }
         }
     }
@@ -119,6 +143,8 @@ if(date("w") == $day)
     $notinlistitems=implode("', '",$ids); $note="Item Removed From Calendar";
     $notinlist="UPDATE cec_Entries SET E_Viewed='N', E_ScriptNote='$note' WHERE E_ID NOT IN ('$notinlistitems')";
     if(!mysqli_query($db,$notinlist)) { echo("Unable to Run Query: $notinlist"); exit; }
+
+    if(file_exists("/var/www/html/cec/uploads/calendar")) { unlink("/var/www/html/cec/uploads/calendar"); }
 }
 
 ?>
