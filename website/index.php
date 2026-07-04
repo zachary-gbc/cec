@@ -10,7 +10,7 @@ $numbers="SELECT COUNT(E_ID) AS CountEntries FROM cec_Entries WHERE (E_Viewed='N
 if(!$rs=mysqli_query($db,$numbers)) { echo("Unable to Run Query: $numbers"); exit; }
 while($row = mysqli_fetch_array($rs)) { $number=$row['CountEntries']; }
 
-if($number == 0) { echo("<h4>No Unviewed Entries - <a href='checkentries.php'>View Entries</a></h4>\n"); }
+if($number == 0) { echo("<h4>No Unviewed Entries</h4>\n"); }
 else { echo("<h4 style='color:red'>$number Unviewed Entries - <a href='checkentries.php'>View Entries</a></h4>\n"); }
 
 ?>
