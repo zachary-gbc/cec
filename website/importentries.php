@@ -96,27 +96,31 @@ if(date("w") == $day)
 
             if(strpos($line, "END:VEVENT") !== false)
             {
-                $updatedb=false; $note="";
+                $updatedb=false; $note=""; $viewed="";
                 if($processitem == true)
                 {
                     if(array_key_exists($id,$starts))
                     {
                         if($recurrings[$id] == "N")
                         {
-                            if(trim($starts[$id]) != trim($start)) { $updatedb=true; $note.=", Start Time Change"; }
-                            if(trim($ends[$id]) != trim($end)) { $updatedb=true; $note.=", End Time Change"; }
+                            if(trim($starts[$id]) != trim($start))
+                            { $updatedb=true; $viewed=", E_Viewed='N'"; $note.=", Start Time Change"; }
+                            if(trim($ends[$id]) != trim($end))
+                            { $updatedb=true; $viewed=", E_Viewed='N'"; $note.=", End Time Change"; }
                         }
                         if(trim(str_replace("'","''",$descriptions[$id])) != trim($description))
-                        { $updatedb=true; $note.=", Description Change"; }
+                        { $updatedb=true; $note.=", Description Change"; $viewed=", E_Viewed='N'"; }
                         if(trim(str_replace("'","''",$summarys[$id])) != trim($summary))
-                        { $updatedb=true; $note.=", Summary Change"; }
+                        { $updatedb=true; $note.=", Summary Change"; $viewed=", E_Viewed='N'"; }
                         if(trim(str_replace("'","''",$locations[$id])) != trim($location))
-                        { $updatedb=true; $note.=", Location Change"; }
+                        { $updatedb=true; $note.=", Location Change"; $viewed=", E_Viewed='N'"; }
+
+                        if(array_key_exists($recurrings[$id])) { $updatedb=true; }
 
                         if($updatedb == true)
                         {
-                            $note=substr($note,2);
-                            $update="UPDATE cec_Entries SET E_Start='$start', E_End='$end', E_Description='$description', E_Summary='$summary', E_Location='$location', E_Viewed='N', E_ScriptNote='$note' WHERE (E_ID='$id')"; $u++;
+                            if(strlen($note) > 3) { $note=substr($note,2); }
+                            $update="UPDATE cec_Entries SET E_Start='$start', E_End='$end', E_Description='$description', E_Summary='$summary', E_Location='$location', E_ScriptNote='$note'$viewed WHERE (E_ID='$id')"; $u++;
                             if(!mysqli_query($db,$update)) { echo("Unable to Run Query: $update"); exit; }
                         }
                     }
