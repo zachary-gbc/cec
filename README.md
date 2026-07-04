@@ -10,6 +10,7 @@ Steps for initialization of a pi:
         - Update Hostname (recommended to know which device is which but not required)
         - Wireless LAN
         - Update password (recommended but not required)
+        - Admin Password (set to No)
     - Reboot
 1. sudo apt-get update
 1. sudo apt-get install git -y
