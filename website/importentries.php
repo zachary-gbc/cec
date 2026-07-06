@@ -115,7 +115,7 @@ if(date("w") == $day)
                         if(trim(str_replace("'","''",$locations[$id])) != trim($location))
                         { $updatedb=true; $note.=", Location Change"; $viewed=", E_Viewed='N'"; }
 
-                        if(array_key_exists($recurrings[$id])) { $updatedb=true; }
+                        if(array_key_exists($id,$recurrings) && $recurrings[$id] == "Y") { $updatedb=true; }
 
                         if($updatedb == true)
                         {
@@ -149,7 +149,7 @@ if(date("w") == $day)
     }
 
     if(file_exists("/var/www/html/cec/uploads/calendar")) { unlink("/var/www/html/cec/uploads/calendar"); }
-    $now=date("Y-m-d H:i:s"); $update="UPDATE Variables SET Var_Value='$now' WHERE (Var_System='cec') AND (Var_Name='last-import')";
+    $now=date("Y-m-d H:i:s",time()); $update="UPDATE Variables SET Var_Value='$now' WHERE (Var_System='cec') AND (Var_Name='last-import')";
     if(!mysqli_query($db,$update)) { echo("Unable to Run Query: $update"); exit; }
 
 }
