@@ -14,3 +14,4 @@ CREATE TABLE cec_Entries(
 
 INSERT INTO Variables(Var_System, Var_Name, Var_Value) VALUES('cec', 'import-day', '1');
 INSERT INTO Variables(Var_System, Var_Name, Var_Value) VALUES('cec', 'calendar-url', 'empty');
+INSERT INTO Variables(Var_System, Var_Name, Var_Value) VALUES('cec', 'last-import', '1111-11-11 11:11:11');
