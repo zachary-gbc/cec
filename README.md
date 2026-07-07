@@ -11,6 +11,8 @@ Steps for initialization of a pi:
         - Wireless LAN
         - Update password (recommended but not required)
         - Admin Password (set to No)
+    - Localisation Options
+        - Timezone
     - Reboot
 1. sudo apt-get update
 1. sudo apt-get install git -y
