@@ -6,7 +6,7 @@ $dayofweek="SELECT Var_Value FROM Variables WHERE (Var_System='cec') AND (Var_Na
 if(!$rs=mysqli_query($db,$dayofweek)) { echo("Unable to Run Query: $dayofweek"); exit; }
 while($row = mysqli_fetch_array($rs)) { $day=$row['Var_Value']; }
 
-if(date("w") == $day)
+if(str_contains($day,date("w")))
 {
     $calendarurl="SELECT Var_Value FROM Variables WHERE (Var_System='cec') AND (Var_Name='calendar-url')"; $url=""; $ids=array();
     if(!$rs=mysqli_query($db,$calendarurl)) { echo("Unable to Run Query: $calendarurl"); exit; }
