@@ -11,6 +11,7 @@ else
 fi
 
 . /var/www/conf/csdb.conf
+lanip=$(hostname -I | tr -d ' ')
 
 mkdir -p /home/pi/log/cec
 install_log="/home/pi/log/cec/install.log"
@@ -21,7 +22,10 @@ cp /home/pi/cec/scripts/ghupdate.sh /home/pi/scripts/cec/ghupdate.sh
 mkdir -p /var/www/html/cec/uploads
 sudo chown www-data:www-data /var/www/html/cec/uploads
 
-sudo mysql --host="$database_ip" --user="$database_username" --password="$database_password" --database="$database_name" < /home/pi/cec/db.txt
+if [ "$database_ip" == "$lanip" ]
+then
+    sudo mysql --user="$database_username" --password="$database_password" --database="$database_name" < /home/pi/cec/db.txt
+fi
 
 echo "never" > /home/pi/cec_lastupdatecommit
 sudo cp -f /home/pi/cec/cec.cron /etc/cron.d/cec
