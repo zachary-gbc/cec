@@ -6,4 +6,4 @@
 5 4 * * * pi curl http://localhost/cec/importentries.php
 
 # Cleanup Once a Week
-30 1 * * 2 pi bash /home/pi/scripts/cleanup.sh &
+30 1 * * 2 pi bash /home/pi/scripts/cec/cleanup.sh &

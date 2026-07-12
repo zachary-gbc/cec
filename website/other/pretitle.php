@@ -1,8 +1,6 @@
 <?php
-
 $system="cec"; $systemname="Calendar Entry Checker"; $loadnow=time();
 include($_SERVER['DOCUMENT_ROOT'] . '/other/dblogin.php');
-
 ?>
 
 <!DOCTYPE html>
