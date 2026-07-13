@@ -26,6 +26,7 @@ sudo mv -f /home/pi/cec/scripts/* /home/pi/scripts/cec/
 # Crons
 sudo mv -f /home/pi/cec/cec.cron /etc/cron.d/cec
 sudo chown root:root /etc/cron.d/cec
+sudo chmod 600 /etc/cron.d/cec
 
 # Website
 sudo rsync -avu "/home/pi/cec/website/" "/var/www/html/cec"

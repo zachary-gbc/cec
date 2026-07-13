@@ -2,7 +2,7 @@
 
 include($_SERVER['DOCUMENT_ROOT'] . '/other/dblogin.php');
 
-$dayofweek="SELECT Var_Value FROM Variables WHERE (Var_System='cec') AND (Var_Name='import-day')"; $day="9";
+$dayofweek="SELECT Var_Value FROM Variables WHERE (Var_System='cec') AND (Var_Name='import-day')"; $day="9"; $x=0; $y=0;
 if(!$rs=mysqli_query($db,$dayofweek)) { echo("Unable to Run Query: $dayofweek"); exit; }
 while($row = mysqli_fetch_array($rs)) { $day=$row['Var_Value']; }
 
@@ -41,9 +41,10 @@ if(str_contains($day,date("w")))
 
         while(($line=fgets($file)) !== false)
         {
+            $x++;
             if(strpos($line, "UID") !== false)
             {
-                $longid=substr($line,7); $id=substr($longid,0,strpos($longid,"-")); $ids[$id]=$id;
+                $longid=substr($line,7); $id=substr($longid,0,strpos($longid,"-")); $ids[$id]=$id; $y++;
                 if(array_key_exists($id,$newids)) { $recurringids[$id]=$id; }
             }
             if(strpos($line, "DTSTART") !== false)
@@ -151,7 +152,8 @@ if(str_contains($day,date("w")))
     if(file_exists("/var/www/html/cec/uploads/calendar")) { unlink("/var/www/html/cec/uploads/calendar"); }
     $now=date("Y-m-d H:i:s",time()); $update="UPDATE Variables SET Var_Value='$now' WHERE (Var_System='cec') AND (Var_Name='last-import')";
     if(!mysqli_query($db,$update)) { echo("Unable to Run Query: $update"); exit; }
-
+    echo("$x Lines Processed, $y Entries Processed");
 }
+else { echo("Incorrect Day, Skipping Import"); }
 
 ?>
