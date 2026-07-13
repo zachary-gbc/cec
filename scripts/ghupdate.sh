@@ -20,18 +20,18 @@ then
     mv /home/pi/cec/scripts/ghupdate.sh /home/pi/cec-ghupdate.sh
     ( sleep 60; mv /home/pi/cec-ghupdate.sh /home/pi/scripts/cec/ghupdate.sh ) & 
 
-# Scripts
-sudo mv -f /home/pi/cec/scripts/* /home/pi/scripts/cec/
+    # Scripts
+    sudo mv -f /home/pi/cec/scripts/* /home/pi/scripts/cec/
 
-# Crons
-sudo mv -f /home/pi/cec/cec.cron /etc/cron.d/cec
-sudo chown root:root /etc/cron.d/cec
-sudo chmod 600 /etc/cron.d/cec
+    # Crons
+    sudo mv -f /home/pi/cec/cec.cron /etc/cron.d/cec
+    sudo chown root:root /etc/cron.d/cec
+    sudo chmod 600 /etc/cron.d/cec
 
-# Website
-sudo rsync -avu "/home/pi/cec/website/" "/var/www/html/cec"
+    # Website
+    sudo rsync -avu "/home/pi/cec/website/" "/var/www/html/cec"
 
-echo $lastcommit > /home/pi/cec_lastupdatecommit
+    echo $lastcommit > /home/pi/cec_lastupdatecommit
 fi
 
 sudo rm -r -f /home/pi/cec
